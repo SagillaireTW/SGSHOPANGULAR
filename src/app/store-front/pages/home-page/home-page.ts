@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { ProductCard } from "../../../products/components/product-card/product-card";
 import { ProductService } from '../../../products/services/products.service';
+import { Product } from '../../../products/interfaces/product.interface';
 
 @Component({
   selector: 'app-home-page',
@@ -13,8 +14,10 @@ export class HomePage {
 
   private productService = inject(ProductService);
 
+  products = signal<Product[]>([])
+
   productResource = rxResource({
     params: () => ({}),
-    stream: ({ params }) => this.productService.getProducts({ limit: 1 })
+    stream: ({ params }) => this.productService.getProducts({})
   })
 }
