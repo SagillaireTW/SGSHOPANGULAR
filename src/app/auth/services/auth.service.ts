@@ -4,7 +4,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 
 import { AuthResponse } from '../interfaces/auth.interface';
 import { User } from '../interfaces/user.interface';
-import { tap } from 'rxjs';
+import { catchError, map, Observable, of, tap } from 'rxjs';
 
 type AuthStatus = 'checking' | 'authenticated' | 'not-authenticated';
 const baseUrl = environment.baseUrl;
@@ -28,7 +28,7 @@ export class AuthService {
   user = computed(() => this._user());
   token = computed(() => this._token());
 
-  login(email: string, password: string) {
+  login(email: string, password: string): Observable<boolean> {
     return this.http.post<AuthResponse>(`${baseUrl}/auth/login`, {
       email,
       password
@@ -39,6 +39,13 @@ export class AuthService {
         this._authStatus.set('authenticated');
 
         localStorage.setItem('token', res.token);
+      }),
+      map(() => true),
+      catchError((error: any) => {
+        this._user.set(null);
+        this._token.set(null);
+        this._authStatus.set('not-authenticated');
+        return of(false)
       })
     )
   }
