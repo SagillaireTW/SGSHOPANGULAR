@@ -38,47 +38,49 @@ export class AuthService {
       email,
       password
     }).pipe(
-      tap((res) => {
-        this._user.set(res.user);
-        this._token.set(res.token);
-        this._authStatus.set('authenticated');
-
-        localStorage.setItem('token', res.token);
-      }),
-      map(() => true),
-      catchError((error: any) => {
-        this._user.set(null);
-        this._token.set(null);
-        this._authStatus.set('not-authenticated');
-        return of(false)
-      })
+      map((res) => this.handleAuthSuccess(res)),
+      catchError(() => this.handleAuthError())
     )
   }
 
   checkStatus(): Observable<boolean> {
     const token = localStorage.getItem('token');
 
-    if (!token) return of(false);
+    if (!token) {
+      this.logout();
+      return of(false);
+    }
 
     return this.http.get<AuthResponse>(`${baseUrl}/auth/check-status`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     }).pipe(
-      tap((res) => {
-        this._user.set(res.user);
-        this._token.set(res.token);
-        this._authStatus.set('authenticated');
-
-        localStorage.setItem('token', res.token);
-      }),
-      map(() => true),
-      catchError((error: any) => {
-        this._user.set(null);
-        this._token.set(null);
-        this._authStatus.set('not-authenticated');
-        return of(false)
-      })
+      map((res) => this.handleAuthSuccess(res)),
+      catchError(() => this.handleAuthError())
     )
+  }
+
+  logout() {
+    this._user.set(null);
+    this._token.set(null);
+    this._authStatus.set('not-authenticated');
+
+    localStorage.removeItem('token');
+  }
+
+  private handleAuthSuccess({ user, token }: AuthResponse) {
+    this._user.set(user);
+    this._token.set(token);
+    this._authStatus.set('authenticated');
+
+    localStorage.setItem('token', token);
+
+    return true;
+  }
+
+  private handleAuthError() {
+    this.logout();
+    return of(false)
   }
 }
