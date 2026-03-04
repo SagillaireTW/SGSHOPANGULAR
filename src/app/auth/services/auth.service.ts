@@ -6,6 +6,7 @@ import { AuthResponse } from '../interfaces/auth.interface';
 import { User } from '../interfaces/user.interface';
 import { catchError, map, Observable, of, tap } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { RegisterProps } from '../interfaces/register.interface';
 
 type AuthStatus = 'checking' | 'authenticated' | 'not-authenticated';
 const baseUrl = environment.baseUrl;
@@ -43,6 +44,13 @@ export class AuthService {
     )
   }
 
+  register(body: RegisterProps): Observable<boolean> {
+    return this.http.post<AuthResponse>(`${baseUrl}/auth/register`, body).pipe(
+      map((res) => this.handleAuthSuccess(res)),
+      catchError(() => this.handleAuthError())
+    )
+  }
+
   checkStatus(): Observable<boolean> {
     const token = localStorage.getItem('token');
 
@@ -51,11 +59,7 @@ export class AuthService {
       return of(false);
     }
 
-    return this.http.get<AuthResponse>(`${baseUrl}/auth/check-status`, {
-      // headers: {
-      //   Authorization: `Bearer ${token}`
-      // }
-    }).pipe(
+    return this.http.get<AuthResponse>(`${baseUrl}/auth/check-status`).pipe(
       map((res) => this.handleAuthSuccess(res)),
       catchError(() => this.handleAuthError())
     )
@@ -66,8 +70,7 @@ export class AuthService {
     this._token.set(null);
     this._authStatus.set('not-authenticated');
 
-    // TODO: Revertir
-    // localStorage.removeItem('token');
+    localStorage.removeItem('token');
   }
 
   private handleAuthSuccess({ user, token }: AuthResponse) {
