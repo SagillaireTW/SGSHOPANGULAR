@@ -10,11 +10,7 @@ import { Product } from '../../../products/interfaces/product.interface';
   templateUrl: './home-page.html',
 })
 export class HomePage {
-  items = Array(12).fill(0);
-
   private productService = inject(ProductService);
-
-  products = signal<Product[]>([])
 
   productResource = rxResource({
     params: () => ({}),
