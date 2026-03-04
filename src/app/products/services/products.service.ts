@@ -15,15 +15,17 @@ interface Options {
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   private http = inject(HttpClient);
-  private productCache = new Map<string, ProductsResponse>();
+
+  private productCache = new Map<string, Product>();
+  private productsCache = new Map<string, ProductsResponse>();
 
   getProducts(options: Options): Observable<ProductsResponse> {
     const { limit = 9, offset = 0, gender = '' } = options;
 
     const key = `${limit}-${offset}-${gender}`;
 
-    if (this.productCache.has(key))
-      return of(this.productCache.get(key)!);
+    if (this.productsCache.has(key))
+      return of(this.productsCache.get(key)!);
 
     return this.http
       .get<ProductsResponse>(`${baseUrl}/products`, {
@@ -35,12 +37,18 @@ export class ProductService {
       })
       .pipe(
         tap((res) => console.log({ res })),
-        tap((res) => this.productCache.set(key, res)),
+        tap((res) => this.productsCache.set(key, res)),
       )
   }
 
   getProductBySlug(idSlug: string): Observable<Product> {
+    if (this.productCache.has(idSlug))
+      return of(this.productCache.get(idSlug)!);
+
     return this.http.get<Product>(`${baseUrl}/products/${idSlug}`)
-      .pipe(tap((res) => console.log({ IDSLUG: res })));
+      .pipe(
+        tap((res) => console.log({ IDSLUG: res })),
+        tap((res) => this.productCache.set(idSlug, res))
+      );
   }
 }
