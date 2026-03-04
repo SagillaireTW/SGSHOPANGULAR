@@ -1,4 +1,4 @@
-<form class="flex flex-col gap-2">
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-2">
   <label class="input">
     <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
@@ -6,7 +6,7 @@
         <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
       </g>
     </svg>
-    <input type="email" placeholder="mail@site.com" />
+    <input formControlName="email" type="email" placeholder="mail@site.com" />
   </label>
 
   <label class="input">
@@ -18,7 +18,7 @@
         <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>
       </g>
     </svg>
-    <input type="password" placeholder="Password" />
+    <input formControlName="password" type="password" placeholder="Password" />
   </label>
 
   <button type="submit" class="btn btn-secondary">Login</button>
@@ -28,3 +28,13 @@
     <a routerLink="/auth/register" class="text-secondary">Crea una aquí</a>
   </p>
 </form>
+
+@if (hasError()) {
+<div role="alert" class="alert alert-error animate-fade-in fixed bottom-5 right-5 w-85">
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+      d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+  <span>Por favor revise la informacion ingresada.</span>
+</div>
+}
