@@ -2,10 +2,11 @@ import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ProductService } from '../../../products/services/products.service';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { ProductSwiper } from "../../../products/components/product-swiper/product-swiper";
 
 @Component({
   selector: 'app-product-page',
-  imports: [],
+  imports: [ProductSwiper],
   templateUrl: './product-page.html',
 })
 export class ProductPage {

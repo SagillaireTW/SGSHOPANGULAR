@@ -7,7 +7,7 @@
 @if (productResource.hasValue()) {
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
   <!-- Imagenes -->
-  <p>Imagenes</p>
+  <product-swiper [images]="productResource.value().images" />
 
   <!-- Producto -->
   <div>
