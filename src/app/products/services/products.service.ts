@@ -65,5 +65,25 @@ export class ProductService {
 
   updateProduct(id: string, productLike: Partial<Product>) {
     return this.http.patch<Product>(`${baseUrl}/products/${id}`, productLike)
+      .pipe(tap((product) => this.updateProductCache(product)))
+  }
+
+  updateProductCache(product: Product) {
+    const productId = product.id;
+
+    // Actualizar producto individual
+    this.productCache.set(productId, product);
+
+    // Actualizar productos
+    this.productsCache.forEach((productsResponse) => {
+      productsResponse.products.map((cureentProduct) => {
+        if (cureentProduct.id === productId) return product;
+
+        return cureentProduct;
+      })
+    })
+
+    console.log('Cache actualizado: ', product.id);
+
   }
 }
