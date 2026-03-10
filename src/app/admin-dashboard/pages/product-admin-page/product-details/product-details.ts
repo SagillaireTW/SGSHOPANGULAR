@@ -3,10 +3,11 @@ import { Product } from '../../../../products/interfaces/product.interface';
 import { ProductSwiper } from "../../../../products/components/product-swiper/product-swiper";
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormUtils } from '../../../utils/form-utils';
+import { FormErrorLabel } from "../../../../shared/components/form-error-label/form-error-label";
 
 @Component({
   selector: 'product-details',
-  imports: [ProductSwiper, ReactiveFormsModule],
+  imports: [ProductSwiper, ReactiveFormsModule, FormErrorLabel],
   templateUrl: './product-details.html',
 })
 export class ProductDetails implements OnInit {
@@ -56,5 +57,7 @@ export class ProductDetails implements OnInit {
 
   onSubmit() {
     console.log(this.productForm.value);
+
+    console.log(this.productForm.valid);
   }
 }
