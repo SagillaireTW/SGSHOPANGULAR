@@ -4,6 +4,7 @@ import { ProductSwiper } from "../../../../products/components/product-swiper/pr
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormUtils } from '../../../utils/form-utils';
 import { FormErrorLabel } from "../../../../shared/components/form-error-label/form-error-label";
+import { ProductService } from '../../../../products/services/products.service';
 
 @Component({
   selector: 'product-details',
@@ -12,6 +13,7 @@ import { FormErrorLabel } from "../../../../shared/components/form-error-label/f
 })
 export class ProductDetails implements OnInit {
   product = input.required<Product>();
+  productService = inject(ProductService);
 
   fb = inject(FormBuilder)
 
@@ -56,8 +58,20 @@ export class ProductDetails implements OnInit {
   }
 
   onSubmit() {
-    console.log(this.productForm.value);
+    const isValid = this.productForm.valid;
+    this.productForm.markAllAsTouched();
 
-    console.log(this.productForm.valid);
+    if (!isValid) return;
+    const formValue = this.productForm.value;
+
+    const productLike: Partial<Product> = {
+      ...formValue as Partial<Product>,
+      tags: formValue.tags
+      ?.toLowerCase()
+      .split(',')
+      .map((tag) => tag.trim()) ?? [],
+    }
+
+    this.productService.updateProduct(productLike)
   }
 }
